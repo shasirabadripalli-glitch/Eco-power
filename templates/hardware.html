@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hardware Specifications - EcoPower SIH 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="logo-icon"><i class="fa-solid fa-solar-panel"></i></div>
+                <div class="brand-text">
+                    <span class="brand-name">Eco<span class="highlight">Power</span></span>
+                    <span class="brand-tagline">Hardware Architecture &amp; Circuit Wiring</span>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a href="{{ url_for('index') }}"><i class="fa-solid fa-house"></i> Home Dashboard</a>
+                <a href="{{ url_for('hardware_page') }}" class="active"><i class="fa-solid fa-microchip"></i> Hardware Specs</a>
+                <a href="{{ url_for('about') }}"><i class="fa-solid fa-circle-info"></i> About Project</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-container">
+        <div class="glass-card page-card">
+            <h1><i class="fa-solid fa-microchip text-blue"></i> Hardware Prototype &amp; Circuit Setup</h1>
+            <p class="subtitle">Complete physical component details, pinout mapping, and safe low-voltage prototype instructions</p>
+
+            <div class="info-block">
+                <h3><i class="fa-solid fa-list-check text-emerald"></i> Bill of Materials (BOM)</h3>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Component</th>
+                                <th>Specification</th>
+                                <th>Function</th>
+                                <th>Approx Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>ESP32 Board</strong></td>
+                                <td>ESP-WROOM-32 (38 Pin)</td>
+                                <td>Microcontroller, WiFi &amp; Load Relays</td>
+                                <td>₹350</td>
+                            </tr>
+                            <tr>
+                                <td><strong>INA219 Sensor</strong></td>
+                                <td>I2C DC Power Sensor (0-26V)</td>
+                                <td>Voltage, Current &amp; Power Telemetry</td>
+                                <td>₹180</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Solar Panel</strong></td>
+                                <td>12V 5W–10W Solar Module</td>
+                                <td>Renewable Generation Source</td>
+                                <td>₹450</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Battery Bank</strong></td>
+                                <td>12V 7Ah LiFePO4 / Lead Acid</td>
+                                <td>Energy Storage Backup</td>
+                                <td>₹650</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Relay Module</strong></td>
+                                <td>4-Channel 5V Relay Board</td>
+                                <td>High/Med/Low Priority Load Switching</td>
+                                <td>₹140</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="info-block">
+                <h3><i class="fa-solid fa-diagram-project text-amber"></i> ESP32 Pin Connections</h3>
+                <ul>
+                    <li><strong>GPIO 21 (SDA):</strong> Connected to INA219 Sensor SDA &amp; OLED Display SDA</li>
+                    <li><strong>GPIO 22 (SCL):</strong> Connected to INA219 Sensor SCL &amp; OLED Display SCL</li>
+                    <li><strong>GPIO 25:</strong> Connected to Relay Channel 1 (High Priority Load - Essential)</li>
+                    <li><strong>GPIO 26:</strong> Connected to Relay Channel 2 (Medium Priority Load - Fan)</li>
+                    <li><strong>GPIO 27:</strong> Connected to Relay Channel 3 (Low Priority Load - Heater)</li>
+                </ul>
+            </div>
+
+            <div class="action-row">
+                <a href="{{ url_for('index') }}" class="btn btn-primary"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

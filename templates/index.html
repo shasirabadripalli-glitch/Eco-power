@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoPower – Smart Renewable Energy Management System (SIH 2026)</title>
+    <meta name="description" content="EcoPower is an IoT hardware & smart renewable energy generation and priority load management prototype for SIH 2026.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-solar-panel"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">Eco<span class="highlight">Power</span></span>
+                    <span class="brand-tagline">Smart Renewable Microgrid Manager</span>
+                </div>
+            </div>
+            
+            <nav class="nav-links">
+                <a href="#home" class="nav-link active"><i class="fa-solid fa-house"></i> Home</a>
+                <a href="#dashboard" class="nav-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+                <a href="#load-control-section" class="nav-link"><i class="fa-solid fa-sliders"></i> Load Management</a>
+                <a href="#simulation-section" class="nav-link"><i class="fa-solid fa-flask"></i> Simulator</a>
+                <a href="#hardware-section" class="nav-link"><i class="fa-solid fa-microchip"></i> Hardware Specs</a>
+                <a href="#about-section" class="nav-link"><i class="fa-solid fa-circle-info"></i> About Project</a>
+            </nav>
+
+            <div class="status-controls">
+                <div class="system-status" id="connection-status-badge">
+                    <span class="status-dot green-pulse" id="status-dot"></span>
+                    <span class="status-text" id="status-mode-text">Simulation Active</span>
+                </div>
+                <button class="btn btn-sm btn-outline-demo" id="btn-toggle-mode" title="Toggle Hardware / Simulation Mode">
+                    <i class="fa-solid fa-toggle-on" id="demo-toggle-icon"></i> Mode Switch
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO OVERVIEW SECTION -->
+        <section id="home" class="hero-section">
+            <div class="hero-content">
+                <div class="eco-badge">
+                    <i class="fa-solid fa-award"></i> SIH 2026 | AICTE | PS ID: SIH26217 | Category: Hardware
+                </div>
+                <h1 class="hero-title">EcoPower – Smart Renewable <span class="gradient-text">Energy Management</span></h1>
+                <p class="hero-description">
+                    An intelligent microgrid system demonstrating efficient solar generation, high-precision power sensing, priority load control, and battery preservation logic for SIH 2026.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="#dashboard" class="btn btn-primary">
+                        <i class="fa-solid fa-gauge-high"></i> Open Live Dashboard
+                    </a>
+                    <a href="#load-control-section" class="btn btn-accent">
+                        <i class="fa-solid fa-toggle-on"></i> Priority Load Controller
+                    </a>
+                    <a href="#simulation-section" class="btn btn-outline">
+                        <i class="fa-solid fa-flask"></i> Run Hackathon Scenarios
+                    </a>
+                </div>
+
+                <div class="hero-highlights">
+                    <div class="highlight-item">
+                        <i class="fa-solid fa-microchip highlight-icon"></i>
+                        <div>
+                            <h4>ESP32 Sensing Node</h4>
+                            <p>Real-time INA219 $V, I, P$ telemetry</p>
+                        </div>
+                    </div>
+                    <div class="highlight-item">
+                        <i class="fa-solid fa-brain highlight-icon"></i>
+                        <div>
+                            <h4>Priority Load Control</h4>
+                            <p>Essential, Controllable &amp; Heavy load shed</p>
+                        </div>
+                    </div>
+                    <div class="highlight-item">
+                        <i class="fa-solid fa-leaf highlight-icon"></i>
+                        <div>
+                            <h4>Renewable Yield</h4>
+                            <p>Track % utilization &amp; CO₂ savings</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DASHBOARD SECTION -->
+        <div class="dashboard-wrapper" id="dashboard">
+            <div class="section-header">
+                <div class="header-left">
+                    <h2><i class="fa-solid fa-gauge-high text-amber"></i> EcoPower Monitoring Dashboard</h2>
+                    <p>Live IoT solar telemetry, battery storage level, and microgrid power metrics.</p>
+                </div>
+                <div class="last-updated-pill">
+                    <i class="fa-solid fa-arrows-rotate fa-spin" id="sync-spinner"></i>
+                    <span>Status: <strong id="val-active-scenario">Normal Generation</strong></span>
+                </div>
+            </div>
+
+            <!-- KPI CARDS GRID (9 CARDS) -->
+            <section class="kpi-grid">
+                <!-- Card 1: Solar Voltage -->
+                <div class="kpi-card glow-amber">
+                    <div class="kpi-header">
+                        <span class="kpi-title">☀️ Solar Voltage</span>
+                        <div class="kpi-icon icon-amber"><i class="fa-solid fa-bolt"></i></div>
+                    </div>
+                    <div class="kpi-value"><span id="val-voltage">14.20</span> <span class="kpi-unit">V</span></div>
+                    <div class="kpi-subtext"><i class="fa-solid fa-solar-panel"></i> Measured DC panel voltage</div>
+                </div>
+
+                <!-- Card 2: Solar Current -->
+                <div class="kpi-card glow-blue">
+                    <div class="kpi-header">
+                        <span class="kpi-title">⚡ Solar Current</span>
+                        <div class="kpi-icon icon-blue"><i class="fa-solid fa-wave-square"></i></div>
+                    </div>
+                    <div class="kpi-value"><span id="val-current">2.10</span> <span class="kpi-unit">A</span></div>
+                    <div class="kpi-subtext"><i class="fa-solid fa-microchip"></i> Measured via INA219</div>
+                </div>
+
+                <!-- Card 3: Solar Power -->
+                <div class="kpi-card glow-gold">
+                    <div class="kpi-header">
+                        <span class="kpi-title">🔋 Solar Power</span>
+                        <div class="kpi-icon icon-gold"><i class="fa-solid fa-plug-circle-bolt"></i></div>
+                    </div>
+                    <div class="kpi-value"><span id="val-power">29.82</span> <span class="kpi-unit">W</span></div>
+                    <div class="kpi-subtext"><i class="fa-solid fa-calculator"></i> P = Voltage × Current</div>
+                </div>
+
+                <!-- Card 4: Energy Generated -->
+                <div class="kpi-card glow-green">
+                    <div class="kpi-header">
+                        <span class="kpi-title">🌱 Energy Generated</span>
+                        <div class="kpi-icon icon-green"><i class="fa-solid fa-sun"></i></div>
+                    </div>
+                    <div class="kpi-value"><span id="val-solar-gen">29.82</span> <span class="kpi-unit">kWh</span></div>
+                    <div class="kpi-subtext"><i class="fa-solid fa-arrow-trend-up"></i> Total clean yield</div>
+                </div>
+
+                <!-- Card 5: Energy Consumed -->
+                <div class="kpi-card glow-purple">
+                    <div class="kpi-header">
+                        <span class="kpi-title">🔌 Load Consumption</span>
+                        <div class="kpi-icon icon-purple"><i class="fa-solid fa-house-laptop"></i></div>
+                    </div>
+                    <div class="kpi-value"><span id="val-energy-consumed">14.20</span> <span class="kpi-unit">kWh</span></div>
+                    <div class="kpi-subtext"><i class="fa-solid fa-lightbulb"></i> Active microgrid loads</div>
+                </div>
+
+                <!-- Card 6: Battery Level -->
+                <div class="kpi-card glow-emerald" id="card-battery">
+                    <div class="kpi-header">
+                        <span class="kpi-title">🔋 Battery Percentage</span>
+                        <div class="kpi-icon icon-emerald"><i class="fa-solid fa-battery-three-quarters" id="battery-icon"></i></div>
+                    </div>
+                    <div class="kpi-value"><span id="val-battery-pct">82</span> <span class="kpi-unit">%</span></div>
+                    <div class="battery-bar-container">
+                        <div class="battery-bar-fill" id="battery-fill" style="width: 82%;"></div>
+                    </div>
+                </div>
+
+                <!-- Card 7: Renewable Utilization -->
+                <div class="kpi-card glow-cyan">
+                    <div class="kpi-header">
+                        <span class="kpi-title">♻️ Renewable Utilization</span>
+                        <div class="kpi-icon icon-cyan"><i class="fa-solid fa-chart-pie"></i></div>
+                    </div>
+                    <div class="kpi-value"><span id="val-utilization">100.0</span> <span class="kpi-unit">%</span></div>
+                    <div class="kpi-subtext"><i class="fa-solid fa-leaf"></i> (Solar Used / Total Demand) × 100</div>
+                </div>
+
+                <!-- Card 8: Estimated Savings -->
+                <div class="kpi-card glow-gold">
+                    <div class="kpi-header">
+                        <span class="kpi-title">💰 Money Saved</span>
+                        <div class="kpi-icon icon-gold"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                    </div>
+                    <div class="kpi-value">₹<span id="val-money-saved">113.60</span></div>
+                    <div class="kpi-subtext"><i class="fa-solid fa-piggy-bank"></i> Tariff savings achieved</div>
+                </div>
+
+                <!-- Card 9: CO2 Reduction -->
+                <div class="kpi-card glow-teal">
+                    <div class="kpi-header">
+                        <span class="kpi-title">🌍 CO₂ Offset</span>
+                        <div class="kpi-icon icon-teal"><i class="fa-solid fa-earth-americas"></i></div>
+                    </div>
+                    <div class="kpi-value"><span id="val-co2-reduction">11.64</span> <span class="kpi-unit">kg</span></div>
+                    <div class="kpi-subtext"><i class="fa-solid fa-tree"></i> Avoided carbon emissions</div>
+                </div>
+            </section>
+
+            <!-- SMART PRIORITY LOAD MANAGEMENT SECTION -->
+            <section id="load-control-section" class="load-control-section">
+                <div class="glass-card load-management-card">
+                    <div class="card-title-row">
+                        <div>
+                            <h3><i class="fa-solid fa-sliders text-emerald"></i> Smart Priority Load Management Engine</h3>
+                            <span class="card-subtitle">Automatic rule-based load shedding &amp; priority control based on available solar &amp; battery energy</span>
+                        </div>
+                        <div class="summary-badges">
+                            <span class="badge badge-accent"><i class="fa-solid fa-lightbulb"></i> Active Loads: <strong id="val-active-loads-count">2 / 3</strong></span>
+                            <span class="badge badge-outline"><i class="fa-solid fa-leaf"></i> Energy Saved: <strong id="val-energy-saved-kWh">4.80</strong> kWh</span>
+                        </div>
+                    </div>
+
+                    <div class="loads-grid" id="loads-container">
+                        <!-- Load Cards Populated Dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- SMART RECOMMENDATIONS ALERTS -->
+            <section id="recommendations-section" class="recommendation-section">
+                <div class="glass-card recommendation-card">
+                    <div class="card-title-row">
+                        <div>
+                            <h3><i class="fa-solid fa-brain text-emerald"></i> Smart Energy Advisory &amp; System Alerts</h3>
+                            <span class="card-subtitle">Real-time optimization advice generated by EcoPower rules engine</span>
+                        </div>
+                        <span class="badge badge-accent"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Engine</span>
+                    </div>
+
+                    <div id="recommendations-container" class="recommendations-list">
+                        <!-- Alerts dynamically inserted here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- SIMULATION & SCENARIO CONTROLS -->
+            <section id="simulation-section" class="simulator-section">
+                <div class="glass-card form-card">
+                    <div class="card-title-row">
+                        <div>
+                            <h3><i class="fa-solid fa-flask text-amber"></i> Hackathon Demonstration Simulator &amp; Presets</h3>
+                            <span class="card-subtitle">Simulate real-world solar irradiance, battery drain, and load demand scenarios for jury demonstration</span>
+                        </div>
+                        <span class="badge badge-outline" id="active-mode-tag">Software Simulation Mode</span>
+                    </div>
+
+                    <!-- Preset Scenario Buttons -->
+                    <div class="scenario-presets-bar">
+                        <span class="preset-label">Quick Scenarios:</span>
+                        <div class="preset-buttons">
+                            <button class="btn btn-preset btn-high-solar" onclick="runPresetScenario('high_solar')">
+                                ☀️ High Solar Generation
+                            </button>
+                            <button class="btn btn-preset btn-normal" onclick="runPresetScenario('normal')">
+                                🌤️ Normal Generation
+                            </button>
+                            <button class="btn btn-preset btn-low-solar" onclick="runPresetScenario('low_solar')">
+                                ☁️ Low Solar Generation
+                            </button>
+                            <button class="btn btn-preset btn-low-battery" onclick="runPresetScenario('low_battery')">
+                                🪫 Low Battery Emergency
+                            </button>
+                            <button class="btn btn-preset btn-high-demand" onclick="runPresetScenario('high_demand')">
+                                ⚡ High Load Demand
+                            </button>
+                            <button class="btn btn-preset btn-eco" onclick="runPresetScenario('energy_saving')">
+                                🌿 Energy Saving Mode
+                            </button>
+                        </div>
+                    </div>
+
+                    <form id="energy-form" class="simulator-grid">
+                        <div class="form-group">
+                            <label for="input_voltage">
+                                <i class="fa-solid fa-bolt text-amber"></i> Solar Voltage (V)
+                            </label>
+                            <input type="number" id="input_voltage" name="voltage" step="0.1" min="0" max="30" value="14.2" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input_current">
+                                <i class="fa-solid fa-wave-square text-blue"></i> Solar Current (A)
+                            </label>
+                            <input type="number" id="input_current" name="current" step="0.1" min="0" max="10" value="2.1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input_battery">
+                                <i class="fa-solid fa-battery-three-quarters text-emerald"></i> Battery Level (%)
+                            </label>
+                            <input type="number" id="input_battery" name="battery_pct" step="1" min="0" max="100" value="82" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input_load">
+                                <i class="fa-solid fa-house-laptop text-purple"></i> Load Consumption (kWh)
+                            </label>
+                            <input type="number" id="input_load" name="energy_consumed" step="0.1" min="0" max="50" value="14.2" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input_price">
+                                <i class="fa-solid fa-indian-rupee-sign text-gold"></i> Tariff Rate (₹/kWh)
+                            </label>
+                            <input type="number" id="input_price" name="electricity_price" step="0.5" min="1" max="25" value="8.0" required>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-accent" id="btn-submit-telemetry">
+                                <i class="fa-solid fa-paper-plane"></i> Apply Custom Parameters
+                            </button>
+                            <button type="button" class="btn btn-outline" id="btn-randomize-demo">
+                                <i class="fa-solid fa-shuffle"></i> Randomize Scenario
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- HARDWARE SPECIFICATIONS SECTION -->
+            <section id="hardware-section" class="hardware-section">
+                <div class="glass-card hardware-info-card">
+                    <div class="card-title-row">
+                        <div>
+                            <h3><i class="fa-solid fa-microchip text-blue"></i> Hardware Prototype Specifications &amp; Wiring</h3>
+                            <span class="card-subtitle">Low-voltage safe physical hardware setup with ESP32 &amp; INA219 power sensors</span>
+                        </div>
+                        <a href="{{ url_for('hardware_page') }}" class="btn btn-sm btn-outline">
+                            <i class="fa-solid fa-up-right-from-square"></i> Full Specs Page
+                        </a>
+                    </div>
+
+                    <div class="hardware-grid">
+                        <div class="hw-box">
+                            <h4><i class="fa-solid fa-cpu text-amber"></i> ESP32 Microcontroller Node</h4>
+                            <p>Built-in 2.4 GHz WiFi, dual-core processing, local ADC light sensing, and 3-channel optocoupler relay control for priority loads.</p>
+                        </div>
+                        <div class="hw-box">
+                            <h4><i class="fa-solid fa-bolt text-blue"></i> INA219 High-Precision Power Sensor</h4>
+                            <p>Measures DC voltage (0–26V) and current up to $\pm3.2\text{A}$ over I2C bus (`GPIO 21 SDA / GPIO 22 SCL`) for accurate $P = V \times I$ calculation.</p>
+                        </div>
+                        <div class="hw-box">
+                            <h4><i class="fa-solid fa-toggle-on text-emerald"></i> 3-Channel Relay Module</h4>
+                            <p>Channel 1 (GPIO 25): High Priority Essential Load.<br>Channel 2 (GPIO 26): Medium Priority Fan.<br>Channel 3 (GPIO 27): Low Priority Heater.</p>
+                        </div>
+                        <div class="hw-box">
+                            <h4><i class="fa-solid fa-shield-halved text-purple"></i> Low-Voltage Prototype Safety</h4>
+                            <p>Operates strictly on safe 12V DC power with isolated components. Safe for classroom, laboratory, and hackathon presentation environments.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ABOUT PROJECT SECTION -->
+            <section id="about-section" class="about-section">
+                <div class="glass-card about-info-card">
+                    <div class="card-title-row">
+                        <div>
+                            <h3><i class="fa-solid fa-circle-info text-emerald"></i> SIH 2026 Project Context &amp; Innovation</h3>
+                            <span class="card-subtitle">Smart India Hackathon 2026 | AICTE | Problem Statement ID: SIH26217</span>
+                        </div>
+                        <a href="{{ url_for('about') }}" class="btn btn-sm btn-outline">
+                            <i class="fa-solid fa-up-right-from-square"></i> Full Project Details
+                        </a>
+                    </div>
+
+                    <div class="about-grid">
+                        <div class="about-card-mini">
+                            <h4><i class="fa-solid fa-lightbulb text-amber"></i> The Problem Statement</h4>
+                            <p>Student Innovation – Innovative ideas that help manage and generate renewable/sustainable energy sources more efficiently across microgrids.</p>
+                        </div>
+                        <div class="about-card-mini">
+                            <h4><i class="fa-solid fa-wand-magic-sparkles text-emerald"></i> EcoPower Solution</h4>
+                            <p>Combines IoT hardware sensing, rule-based priority load control, energy-saving analytics, and interactive simulation mode for microgrid management.</p>
+                        </div>
+                        <div class="about-card-mini">
+                            <h4><i class="fa-solid fa-chart-line text-blue"></i> High Impact &amp; Scalability</h4>
+                            <p>Reduces grid reliance during peak hours, prevents battery deep-discharge, and easily scales from homes to schools, farms, and village microgrids.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VISUAL ANALYTICS CHARTS (4 CHARTS) -->
+            <section id="charts-section" class="charts-section">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-chart-column text-blue"></i> Visual Analytics &amp; Real-Time Charts</h2>
+                    <p>Dynamic visualization of solar yield timelines, generation vs consumption, battery state, and power mix.</p>
+                </div>
+
+                <div class="charts-grid">
+                    <!-- Chart 1: Solar Power & Current Timeline -->
+                    <div class="glass-card chart-card">
+                        <h4><i class="fa-solid fa-chart-line text-amber"></i> Real-Time Solar Power &amp; Current Timeline</h4>
+                        <div class="chart-container">
+                            <canvas id="chart-power-timeline"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Chart 2: Energy Generation vs Consumption -->
+                    <div class="glass-card chart-card">
+                        <h4><i class="fa-solid fa-chart-bar text-green"></i> Solar Yield vs. Load Demand (kWh)</h4>
+                        <div class="chart-container">
+                            <canvas id="chart-gen-vs-cons"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Chart 3: Battery Level Trend -->
+                    <div class="glass-card chart-card">
+                        <h4><i class="fa-solid fa-battery-half text-emerald"></i> Battery Storage Charge Level (%)</h4>
+                        <div class="chart-container">
+                            <canvas id="chart-battery-trend"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Chart 4: Solar vs Grid Usage Mix -->
+                    <div class="glass-card chart-card">
+                        <h4><i class="fa-solid fa-chart-pie text-cyan"></i> Renewable Self-Consumption vs. Grid Supplemental Mix</h4>
+                        <div class="chart-container">
+                            <canvas id="chart-usage-mix"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TELEMETRY HISTORY TABLE -->
+            <section id="history-section" class="history-section">
+                <div class="glass-card table-card">
+                    <div class="table-header-row">
+                        <div>
+                            <h3><i class="fa-solid fa-table-list text-emerald"></i> Telemetry &amp; Energy Logs History</h3>
+                            <span class="card-subtitle">Stored persistent records received from ESP32 &amp; System Simulator</span>
+                        </div>
+                        <div class="summary-pills">
+                            <span class="pill"><i class="fa-solid fa-layer-group"></i> Logs: <strong id="sum-records">0</strong></span>
+                            <span class="pill"><i class="fa-solid fa-sun"></i> Total Solar: <strong id="sum-solar">0</strong> kWh</span>
+                            <span class="pill"><i class="fa-solid fa-indian-rupee-sign"></i> Saved: ₹<strong id="sum-savings">0</strong></span>
+                            <span class="pill"><i class="fa-solid fa-leaf"></i> CO₂ Saved: <strong id="sum-co2">0</strong> kg</span>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table" id="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Voltage (V)</th>
+                                    <th>Current (A)</th>
+                                    <th>Power (W)</th>
+                                    <th>Solar Gen (kWh)</th>
+                                    <th>Consumed (kWh)</th>
+                                    <th>Battery (%)</th>
+                                    <th>Money Saved</th>
+                                    <th>CO₂ Saved</th>
+                                    <th>Active Loads</th>
+                                    <th>Data Source</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-table-body">
+                                <tr>
+                                    <td colspan="11" class="text-center">Loading telemetry history...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <i class="fa-solid fa-solar-panel"></i> <strong>EcoPower</strong> – Smart Renewable Energy Management System
+            </div>
+            <div class="footer-text">
+                Smart India Hackathon 2026 | AICTE Hardware Theme | PS: SIH26217 | Safe Low-Voltage IoT Prototype
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom Script -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

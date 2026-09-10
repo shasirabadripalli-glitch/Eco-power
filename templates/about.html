@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Project - EcoPower SIH 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="brand">
+                <div class="logo-icon"><i class="fa-solid fa-solar-panel"></i></div>
+                <div class="brand-text">
+                    <span class="brand-name">Eco<span class="highlight">Power</span></span>
+                    <span class="brand-tagline">SIH 2026 Official Documentation</span>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a href="{{ url_for('index') }}"><i class="fa-solid fa-house"></i> Home Dashboard</a>
+                <a href="{{ url_for('hardware_page') }}"><i class="fa-solid fa-microchip"></i> Hardware Specs</a>
+                <a href="{{ url_for('about') }}" class="active"><i class="fa-solid fa-circle-info"></i> About Project</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-container">
+        <div class="glass-card page-card">
+            <h1><i class="fa-solid fa-award text-amber"></i> EcoPower - Smart India Hackathon 2026</h1>
+            <p class="subtitle">Official Project Proposal &amp; Evaluation Brief for Problem Statement <strong>SIH26217</strong></p>
+
+            <div class="info-block">
+                <h3><i class="fa-solid fa-file-contract text-emerald"></i> Project Details</h3>
+                <ul>
+                    <li><strong>Problem Statement:</strong> Student Innovation – Innovative ideas that help manage and generate renewable / sustainable sources more efficiently.</li>
+                    <li><strong>Organization:</strong> AICTE (All India Council for Technical Education)</li>
+                    <li><strong>Category:</strong> Hardware Prototype</li>
+                    <li><strong>Theme:</strong> Renewable / Sustainable Energy</li>
+                    <li><strong>Target Deadline:</strong> 20 September 2026</li>
+                </ul>
+            </div>
+
+            <div class="info-block">
+                <h3><i class="fa-solid fa-lightbulb text-amber"></i> The Core Innovation</h3>
+                <p>
+                    While solar panel deployment is accelerating across India, traditional microgrid installations lack intelligent load balancing. When irradiance drops or battery reserves fall, system failures occur or expensive grid electricity is drawn blindly.
+                </p>
+                <p>
+                    <strong>EcoPower solves this via Smart Energy Management:</strong> An automated rule-based load shedding algorithm running on an ESP32 hardware node and Python Flask backend. It prioritizes essential loads (e.g. medical, emergency lighting, security), controls secondary loads (fans/cooling), and sheds heavy non-essential loads (EV chargers/water heaters) during power deficits.
+                </p>
+            </div>
+
+            <div class="info-block">
+                <h3><i class="fa-solid fa-chart-line text-blue"></i> SIH Evaluation Criteria Mapping</h3>
+                <div class="criteria-grid">
+                    <div class="criteria-card">
+                        <h4>1. Novelty &amp; Innovation</h4>
+                        <p>Dynamic priority-based load management combined with real-time tariff and carbon offset tracking.</p>
+                    </div>
+                    <div class="criteria-card">
+                        <h4>2. Technical Feasibility</h4>
+                        <p>Built using low-cost ESP32, INA219 power sensor, relay switches, Python Flask, and simple CSV/JSON storage.</p>
+                    </div>
+                    <div class="criteria-card">
+                        <h4>3. Social &amp; Environmental Impact</h4>
+                        <p>Prevents battery deep-discharge damage, increases clean energy self-consumption percentage, and reduces grid carbon emissions.</p>
+                    </div>
+                    <div class="criteria-card">
+                        <h4>4. Scalability</h4>
+                        <p>Easily adaptable for residential homes, educational campuses, remote agricultural solar pumps, and commercial microgrids.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-row">
+                <a href="{{ url_for('index') }}" class="btn btn-primary"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
